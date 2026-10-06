@@ -4,11 +4,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import QDateTime, QSize, Qt, QTimer, QUrl
-from PySide6.QtGui import QDesktopServices, QFont, QIcon
+from PySide6.QtCore import QDateTime, QPointF, QRectF, QSize, Qt, QTimer, QUrl
+from PySide6.QtGui import (
+    QColor,
+    QCursor,
+    QDesktopServices,
+    QFont,
+    QIcon,
+    QPainter,
+    QPainterPath,
+    QPen,
+    QPixmap,
+)
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
+    QGraphicsDropShadowEffect,
     QGridLayout,
     QHBoxLayout,
     QLabel,
@@ -16,6 +27,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QSizePolicy,
     QStackedWidget,
     QToolButton,
     QVBoxLayout,
@@ -23,6 +35,7 @@ from PySide6.QtWidgets import (
 )
 
 APP_NAME = "John's Garage"
+APP_ICON = "/usr/share/icons/hicolor/scalable/apps/johns-garage.svg"
 MANUALS_DIR = Path.home() / "Documents" / "Shop Manuals"
 
 PARTS_SITES = {
@@ -31,6 +44,64 @@ PARTS_SITES = {
     "Advance Auto Parts": "https://shop.advanceautoparts.com/",
     "AutoZone": "https://www.autozone.com/",
 }
+
+
+def make_wrench_pointer():
+    """Create a crisp combination-wrench pointer with the jaw as the hotspot."""
+    size = 48
+    pix = QPixmap(size, size)
+    pix.fill(Qt.transparent)
+
+    # Build a proper open-end / ring-end wrench silhouette.
+    jaw_outer = QPainterPath()
+    jaw_outer.addEllipse(QRectF(27, 1, 19, 19))
+    jaw_inner = QPainterPath()
+    jaw_inner.addEllipse(QRectF(32, 6, 9, 9))
+    jaw = jaw_outer.subtracted(jaw_inner)
+
+    # Open the jaw toward the upper-right.
+    jaw_cut = QPainterPath()
+    jaw_cut.moveTo(36, 0)
+    jaw_cut.lineTo(48, 0)
+    jaw_cut.lineTo(48, 16)
+    jaw_cut.lineTo(38, 12)
+    jaw_cut.closeSubpath()
+    jaw = jaw.subtracted(jaw_cut)
+
+    shaft = QPainterPath()
+    shaft.moveTo(12, 39)
+    shaft.lineTo(8, 35)
+    shaft.lineTo(28, 15)
+    shaft.lineTo(34, 21)
+    shaft.closeSubpath()
+
+    ring_outer = QPainterPath()
+    ring_outer.addEllipse(QRectF(2, 31, 16, 16))
+    ring_inner = QPainterPath()
+    ring_inner.addEllipse(QRectF(6.5, 35.5, 7, 7))
+    ring = ring_outer.subtracted(ring_inner)
+
+    wrench = jaw.united(shaft).united(ring)
+
+    painter = QPainter(pix)
+    painter.setRenderHint(QPainter.Antialiasing, True)
+
+    # Black outline.
+    painter.setPen(QPen(QColor("#080a0c"), 5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+    painter.setBrush(QColor("#c9d0d5"))
+    painter.drawPath(wrench)
+
+    # Metallic center.
+    painter.setPen(QPen(QColor("#eef1f3"), 1.5))
+    painter.setBrush(QColor("#aeb7be"))
+    painter.drawPath(wrench)
+
+    # Small orange brand accent down the handle.
+    painter.setPen(QPen(QColor("#ee7a22"), 2.2, Qt.SolidLine, Qt.RoundCap))
+    painter.drawLine(QPointF(13, 34), QPointF(27, 20))
+    painter.end()
+
+    return QCursor(pix, 45, 3)
 
 
 def run_detached(program, args=None):
@@ -43,7 +114,9 @@ def run_detached(program, args=None):
 class ShopOSWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.pointer = make_wrench_pointer()
         self.setWindowTitle(APP_NAME)
+        self.setWindowIcon(QIcon(APP_ICON))
         self.resize(1180, 760)
         self.setMinimumSize(940, 640)
 
@@ -51,6 +124,7 @@ class ShopOSWindow(QMainWindow):
 
         root = QWidget()
         root.setObjectName("root")
+        root.setCursor(self.pointer)
 
         outer = QVBoxLayout(root)
         outer.setContentsMargins(0, 0, 0, 0)
@@ -72,8 +146,13 @@ class ShopOSWindow(QMainWindow):
         self.setCentralWidget(root)
         self.apply_style()
 
+    def set_pointer(self, widget):
+        widget.setCursor(self.pointer)
+        return widget
+
     def action_button(self, text, callback, primary=False, icon=None):
         btn = QPushButton(text)
+        self.set_pointer(btn)
         btn.setMinimumHeight(58)
         btn.setObjectName("primaryAction" if primary else "actionButton")
         if icon:
@@ -82,27 +161,41 @@ class ShopOSWindow(QMainWindow):
         btn.clicked.connect(callback)
         return btn
 
-    def tile(self, title, subtitle, icon_name, callback):
+    def tile(self, title, icon_name, callback, number):
         btn = QToolButton()
+        self.set_pointer(btn)
         btn.setObjectName("scannerTile")
         btn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        btn.setText(f"{title}\n{subtitle}")
+        btn.setText(f"{number:02d}   {title}")
         btn.setIcon(QIcon.fromTheme(icon_name))
-        btn.setIconSize(QSize(54, 54))
-        btn.setMinimumHeight(188)
-        btn.setSizePolicy(btn.sizePolicy().horizontalPolicy(), btn.sizePolicy().verticalPolicy())
+        btn.setIconSize(QSize(72, 72))
+        btn.setMinimumHeight(190)
+        btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         btn.clicked.connect(callback)
+
+        shadow = QGraphicsDropShadowEffect(btn)
+        shadow.setBlurRadius(18)
+        shadow.setOffset(0, 5)
+        shadow.setColor(QColor(0, 0, 0, 145))
+        btn.setGraphicsEffect(shadow)
         return btn
 
     def build_header(self):
         frame = QFrame()
+        self.set_pointer(frame)
         frame.setObjectName("header")
         layout = QHBoxLayout(frame)
-        layout.setContentsMargins(24, 12, 24, 12)
-        layout.setSpacing(18)
+        layout.setContentsMargins(22, 10, 22, 10)
+        layout.setSpacing(16)
+
+        logo = QLabel()
+        logo.setObjectName("brandLogo")
+        logo.setPixmap(QIcon(APP_ICON).pixmap(QSize(64, 64)))
+        logo.setFixedSize(68, 68)
+        logo.setAlignment(Qt.AlignCenter)
 
         brand = QWidget()
-        brand.setObjectName("brandBlock")
+        self.set_pointer(brand)
         brand_layout = QVBoxLayout(brand)
         brand_layout.setContentsMargins(0, 0, 0, 0)
         brand_layout.setSpacing(0)
@@ -127,6 +220,7 @@ class ShopOSWindow(QMainWindow):
         timer.start(1000)
         self.update_clock()
 
+        layout.addWidget(logo)
         layout.addWidget(brand, 2)
         layout.addWidget(self.clock, 1)
         layout.addWidget(self.status_label, 2)
@@ -134,11 +228,13 @@ class ShopOSWindow(QMainWindow):
 
     def build_subheader(self):
         frame = QFrame()
+        self.set_pointer(frame)
         frame.setObjectName("subheader")
         layout = QHBoxLayout(frame)
         layout.setContentsMargins(22, 8, 22, 8)
 
         self.back_btn = QPushButton("←  BACK")
+        self.set_pointer(self.back_btn)
         self.back_btn.setObjectName("backButton")
         self.back_btn.clicked.connect(lambda: self.show_page(0))
         self.back_btn.hide()
@@ -146,7 +242,7 @@ class ShopOSWindow(QMainWindow):
         self.page_title = QLabel("HOME  /  WORKSTATION")
         self.page_title.setObjectName("pageTitle")
 
-        ready = QLabel("SYSTEM READY")
+        ready = QLabel("● SYSTEM READY")
         ready.setObjectName("readyLabel")
 
         layout.addWidget(self.back_btn)
@@ -157,6 +253,7 @@ class ShopOSWindow(QMainWindow):
 
     def build_footer(self):
         frame = QFrame()
+        self.set_pointer(frame)
         frame.setObjectName("footer")
         layout = QHBoxLayout(frame)
         layout.setContentsMargins(22, 8, 22, 8)
@@ -167,53 +264,69 @@ class ShopOSWindow(QMainWindow):
 
     def build_home(self):
         page = QWidget()
+        self.set_pointer(page)
         page.setObjectName("homePage")
         outer = QVBoxLayout(page)
-        outer.setContentsMargins(26, 22, 26, 24)
-        outer.setSpacing(18)
+        outer.setContentsMargins(24, 20, 24, 22)
+        outer.setSpacing(16)
 
         hero = QFrame()
+        self.set_pointer(hero)
         hero.setObjectName("heroPanel")
         hero_layout = QHBoxLayout(hero)
-        hero_layout.setContentsMargins(20, 13, 20, 13)
+        hero_layout.setContentsMargins(18, 11, 18, 11)
 
-        hero_left = QLabel("SHOP COMMAND CENTER")
+        badge = QLabel("JG")
+        badge.setObjectName("heroBadge")
+        badge.setAlignment(Qt.AlignCenter)
+        badge.setFixedSize(42, 42)
+
+        hero_left = QLabel("DIAGNOSTIC CONTROL PANEL")
         hero_left.setObjectName("heroTitle")
-        hero_desc = QLabel("Manuals  •  Parts  •  Support  •  Diagnostics  •  Recovery")
+
+        hero_desc = QLabel("SELECT MODULE")
         hero_desc.setObjectName("heroText")
         hero_desc.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
+        hero_layout.addWidget(badge)
+        hero_layout.addSpacing(8)
         hero_layout.addWidget(hero_left)
         hero_layout.addStretch(1)
         hero_layout.addWidget(hero_desc)
         outer.addWidget(hero)
 
-        grid = QGridLayout()
+        console = QFrame()
+        self.set_pointer(console)
+        console.setObjectName("consoleFrame")
+        grid = QGridLayout(console)
+        grid.setContentsMargins(18, 18, 18, 18)
         grid.setHorizontalSpacing(16)
         grid.setVerticalSpacing(16)
 
         tiles = [
-            ("SERVICE MANUALS", "Local manuals & PDFs", "x-office-document", self.open_manuals),
-            ("PARTS LOOKUP", "Supplier quick access", "applications-internet", lambda: self.show_page(1, "PARTS LOOKUP")),
-            ("REMOTE SUPPORT", "RustDesk & network", "preferences-desktop-remote-desktop", lambda: self.show_page(2, "REMOTE SUPPORT")),
-            ("SYSTEM HEALTH", "Temps · drives · resources", "utilities-system-monitor", lambda: self.show_page(3, "SYSTEM HEALTH")),
-            ("UPDATES / RECOVERY", "Atomic system control", "system-software-update", lambda: self.show_page(4, "UPDATES / RECOVERY")),
-            ("SETTINGS", "Workstation configuration", "settings-configure", lambda: self.show_page(5, "SETTINGS")),
+            ("SERVICE MANUALS", "x-office-document", self.open_manuals),
+            ("PARTS LOOKUP", "applications-internet", lambda: self.show_page(1, "PARTS LOOKUP")),
+            ("REMOTE SUPPORT", "preferences-desktop-remote-desktop", lambda: self.show_page(2, "REMOTE SUPPORT")),
+            ("SYSTEM HEALTH", "utilities-system-monitor", lambda: self.show_page(3, "SYSTEM HEALTH")),
+            ("UPDATES / RECOVERY", "system-software-update", lambda: self.show_page(4, "UPDATES / RECOVERY")),
+            ("SETTINGS", "settings-configure", lambda: self.show_page(5, "SETTINGS")),
         ]
 
-        for i, item in enumerate(tiles):
-            grid.addWidget(self.tile(*item), i // 3, i % 3)
+        for i, item in enumerate(tiles, start=1):
+            grid.addWidget(self.tile(*item, i), (i - 1) // 3, (i - 1) % 3)
 
-        outer.addLayout(grid, 1)
+        outer.addWidget(console, 1)
         return page
 
     def subpage(self, intro):
         page = QWidget()
+        self.set_pointer(page)
         layout = QVBoxLayout(page)
         layout.setContentsMargins(32, 26, 32, 26)
         layout.setSpacing(16)
 
         intro_box = QFrame()
+        self.set_pointer(intro_box)
         intro_box.setObjectName("infoPanel")
         intro_layout = QVBoxLayout(intro_box)
         intro_layout.setContentsMargins(18, 14, 18, 14)
@@ -262,6 +375,7 @@ class ShopOSWindow(QMainWindow):
         self.health_output = QPlainTextEdit()
         self.health_output.setObjectName("output")
         self.health_output.setReadOnly(True)
+        self.health_output.setCursor(Qt.IBeamCursor)
 
         layout.addWidget(self.action_button("RUN SYSTEM HEALTH SCAN", self.refresh_health, True, "utilities-system-monitor"))
         layout.addWidget(self.health_output, 1)
@@ -274,6 +388,7 @@ class ShopOSWindow(QMainWindow):
         self.update_output = QPlainTextEdit()
         self.update_output.setObjectName("output")
         self.update_output.setReadOnly(True)
+        self.update_output.setCursor(Qt.IBeamCursor)
 
         row = QHBoxLayout()
         row.addWidget(self.action_button("Show Deployment Status", self.refresh_update_status, False, "dialog-information"))
@@ -377,26 +492,34 @@ class ShopOSWindow(QMainWindow):
     def apply_style(self):
         self.setStyleSheet("""
             QWidget#root, QWidget#homePage {
-                background: #101316;
+                background: #0c0f12;
                 color: #f5f6f7;
                 font-family: "Noto Sans", "Segoe UI", sans-serif;
             }
 
             QFrame#header {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #76191d, stop:0.48 #a92127, stop:1 #74181c);
-                border-bottom: 3px solid #ee7a22;
+                    stop:0 #101419, stop:0.17 #151a1f, stop:0.5 #871d22, stop:0.72 #a5272d, stop:1 #14191e);
+                border-top: 1px solid #4b5359;
+                border-bottom: 4px solid #ee7a22;
+            }
+
+            QLabel#brandLogo {
+                background: #0b0e10;
+                border: 1px solid #596169;
+                border-radius: 12px;
+                padding: 3px;
             }
 
             QLabel#headerTitle {
                 color: white;
-                font-size: 27px;
+                font-size: 28px;
                 font-weight: 900;
                 letter-spacing: 1px;
             }
 
             QLabel#brandSubtitle {
-                color: #ffd9c1;
+                color: #ffd8bd;
                 font-size: 10px;
                 font-weight: 800;
                 letter-spacing: 2px;
@@ -409,38 +532,39 @@ class ShopOSWindow(QMainWindow):
             }
 
             QLabel#statusLabel {
-                color: #d9ffe0;
-                font-size: 13px;
-                font-weight: 750;
+                color: #bff8c9;
+                font-size: 12px;
+                font-weight: 800;
             }
 
             QFrame#subheader {
-                background: #1c2227;
-                border-bottom: 1px solid #3b444c;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #252b30, stop:1 #171b1f);
+                border-bottom: 1px solid #424b53;
             }
 
             QLabel#pageTitle {
-                color: #f0f2f4;
+                color: #eef1f3;
                 font-size: 12px;
-                font-weight: 850;
+                font-weight: 900;
                 letter-spacing: 1px;
             }
 
             QLabel#readyLabel {
-                color: #8fea9e;
+                color: #8fed9d;
                 font-size: 11px;
-                font-weight: 850;
+                font-weight: 900;
                 letter-spacing: 1px;
             }
 
             QPushButton#backButton {
-                background: #2a3036;
+                background: #2b3238;
                 color: white;
-                border: 1px solid #4a535c;
+                border: 1px solid #59636b;
                 border-radius: 7px;
                 padding: 7px 12px;
                 font-size: 11px;
-                font-weight: 850;
+                font-weight: 900;
             }
 
             QPushButton#backButton:hover {
@@ -448,47 +572,71 @@ class ShopOSWindow(QMainWindow):
             }
 
             QFrame#heroPanel {
-                background: #181d21;
-                border: 1px solid #394149;
-                border-left: 5px solid #ee7a22;
-                border-radius: 8px;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #1b2025, stop:0.55 #252b30, stop:1 #15191d);
+                border: 1px solid #475159;
+                border-left: 6px solid #ee7a22;
+                border-radius: 9px;
+            }
+
+            QLabel#heroBadge {
+                background: #8f2026;
+                color: white;
+                border: 2px solid #d65359;
+                border-radius: 21px;
+                font-size: 13px;
+                font-weight: 900;
             }
 
             QLabel#heroTitle {
                 color: white;
-                font-size: 15px;
+                font-size: 16px;
                 font-weight: 900;
                 letter-spacing: 1px;
             }
 
             QLabel#heroText {
-                color: #aeb7bf;
-                font-size: 12px;
-                font-weight: 650;
+                color: #ee9a59;
+                font-size: 11px;
+                font-weight: 900;
+                letter-spacing: 2px;
+            }
+
+            QFrame#consoleFrame {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #151a1e, stop:1 #0d1013);
+                border: 2px solid #424a51;
+                border-top: 5px solid #686f75;
+                border-radius: 16px;
             }
 
             QToolButton#scannerTile {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #262c31, stop:1 #181c20);
-                color: #f7f8f9;
-                border: 2px solid #722126;
-                border-top: 7px solid #be3037;
-                border-radius: 14px;
-                padding: 18px 14px;
-                font-size: 15px;
-                font-weight: 800;
+                    stop:0 #30373d, stop:0.12 #262c31, stop:1 #171b1f);
+                color: #ffffff;
+                border-left: 2px solid #5b6369;
+                border-right: 2px solid #15181b;
+                border-bottom: 4px solid #0a0c0e;
+                border-top: 8px solid #a7262d;
+                border-radius: 15px;
+                padding: 20px 14px;
+                font-size: 16px;
+                font-weight: 900;
+                letter-spacing: 0.5px;
             }
 
             QToolButton#scannerTile:hover {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #343b41, stop:1 #20262b);
-                border: 2px solid #ee7a22;
-                border-top: 7px solid #ee7a22;
+                    stop:0 #3d454c, stop:1 #20262b);
+                border-left: 2px solid #ee7a22;
+                border-right: 2px solid #ee7a22;
+                border-bottom: 4px solid #7d3a0f;
+                border-top: 8px solid #ee7a22;
             }
 
             QToolButton#scannerTile:pressed {
-                background: #0e1113;
-                border-color: #ff9c4d;
+                background: #111417;
+                border-color: #ff9d4f;
             }
 
             QFrame#infoPanel {
@@ -501,7 +649,7 @@ class ShopOSWindow(QMainWindow):
             QLabel#intro {
                 color: #d7dce0;
                 font-size: 15px;
-                font-weight: 600;
+                font-weight: 650;
             }
 
             QPushButton#actionButton, QPushButton#primaryAction {
@@ -540,7 +688,7 @@ class ShopOSWindow(QMainWindow):
             }
 
             QFrame#footer {
-                background: #090b0d;
+                background: #080a0c;
                 border-top: 1px solid #30373d;
             }
 
@@ -557,6 +705,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setOrganizationName("John's Garage")
+    app.setWindowIcon(QIcon(APP_ICON))
     app.setFont(QFont("Noto Sans", 10))
 
     window = ShopOSWindow()
