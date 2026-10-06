@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# asset-revision: exact-user-logo-v2
 import shutil
 import subprocess
 import sys
