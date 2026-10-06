@@ -176,9 +176,6 @@ class WorkshopTile(QToolButton):
         label=QRectF(12,self.height()-49,self.width()-24,36)
         p.setPen(QColor('#000000')); p.drawText(label.translated(1,2),Qt.AlignCenter,self.title)
         p.setPen(QColor('#f1f1ec')); p.drawText(label,Qt.AlignCenter,self.title)
-        if self.hasFocus():
-            p.setPen(QPen(QColor('#ff9c62'),2,Qt.DashLine)); p.setBrush(Qt.NoBrush)
-            p.drawPath(chamfer(r.adjusted(10,10,-10,-10)))
 
 
 class WorkshopPanel(QFrame):

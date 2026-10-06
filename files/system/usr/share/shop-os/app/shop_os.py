@@ -257,7 +257,7 @@ class ShopOSWindow(QMainWindow):
         grid.setVerticalSpacing(16)
 
         tiles = [
-            ("REPAIR & MAINTENANCE VIDEOS", "video-x-generic", lambda: self.show_page(6, "REPAIR & MAINTENANCE VIDEOS")),
+            ("VIDEO TUTORIALS", "video-x-generic", lambda: self.show_page(6, "VIDEO TUTORIALS")),
             ("PARTS LOOKUP", "applications-internet", lambda: self.show_page(1, "PARTS LOOKUP")),
             ("REMOTE SUPPORT", "preferences-desktop-remote-desktop", lambda: self.show_page(2, "REMOTE SUPPORT")),
             ("SYSTEM HEALTH", "utilities-system-monitor", lambda: self.show_page(3, "SYSTEM HEALTH")),
