@@ -155,14 +155,14 @@ class ShopOSWindow(QMainWindow):
         if not engine_pixmap.isNull():
             logo.setPixmap(
                 engine_pixmap.scaled(
-                    QSize(64, 64),
+                    QSize(74, 74),
                     Qt.KeepAspectRatio,
                     Qt.SmoothTransformation,
                 )
             )
         else:
             logo.setText("JG")
-        logo.setFixedSize(68, 68)
+        logo.setFixedSize(78, 78)
         logo.setAlignment(Qt.AlignCenter)
 
         brand = QWidget()
@@ -476,10 +476,9 @@ class ShopOSWindow(QMainWindow):
             }
 
             QLabel#brandLogo {
-                background: #0b0e10;
-                border: 1px solid #596169;
-                border-radius: 12px;
-                padding: 3px;
+                background: transparent;
+                border: none;
+                padding: 0px;
             }
 
             QLabel#headerTitle {
