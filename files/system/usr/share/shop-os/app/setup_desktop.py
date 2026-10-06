@@ -9,7 +9,8 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
-MARKER = STATE / "simple-desktop-v1.applied"
+PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
+MARKER = STATE / "simple-desktop-v2.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -47,7 +48,8 @@ class Setup:
             target = shortcuts / source.name
             if not target.exists():
                 target.symlink_to(source)
-        script = (ASSETS / "layout.js").read_text().replace("__SHORTCUT_URL__", json.dumps(shortcuts.as_uri()))
+        layout = "panel-tweaks.js" if PREVIOUS_MARKER.exists() else "layout.js"
+        script = (ASSETS / layout).read_text().replace("__SHORTCUT_URL__", json.dumps(shortcuts.as_uri()))
         interface.setTimeout(15000)
         result = interface.call("evaluateScript", script)
         if result.type() == QDBusMessage.ErrorMessage:
@@ -57,7 +59,7 @@ class Setup:
         if "JOHNS_GARAGE_DESKTOP_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied simple workshop desktop v1.\n")
+        MARKER.write_text("Applied slim KDE panel v2.\n")
         self.app.quit()
 
 
