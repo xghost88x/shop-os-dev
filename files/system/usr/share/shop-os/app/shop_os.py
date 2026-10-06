@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import base64
 import shutil
 import subprocess
 import sys
@@ -36,6 +37,7 @@ from PySide6.QtWidgets import (
 
 APP_NAME = "John's Garage"
 APP_ICON = "/usr/share/icons/hicolor/64x64/apps/johns-garage.png"
+ENGINE_LOGO_B64 = """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"""
 CURSOR_ICON = "/usr/share/shop-os/assets/wrench-pointer.png"
 MANUALS_DIR = Path.home() / "Documents" / "Shop Manuals"
 
@@ -45,6 +47,16 @@ PARTS_SITES = {
     "Advance Auto Parts": "https://shop.advanceautoparts.com/",
     "AutoZone": "https://www.autozone.com/",
 }
+
+
+def load_engine_pixmap():
+    """Load the supplied John's Garage engine artwork from embedded PNG data."""
+    pix = QPixmap()
+    try:
+        pix.loadFromData(base64.b64decode(ENGINE_LOGO_B64), "PNG")
+    except Exception:
+        pass
+    return pix
 
 
 def make_wrench_pointer():
@@ -68,7 +80,11 @@ class ShopOSWindow(QMainWindow):
         super().__init__()
         self.pointer = make_wrench_pointer()
         self.setWindowTitle(APP_NAME)
-        self.setWindowIcon(QIcon(APP_ICON))
+        engine_icon_pixmap = load_engine_pixmap()
+        if not engine_icon_pixmap.isNull():
+            self.setWindowIcon(QIcon(engine_icon_pixmap))
+        else:
+            self.setWindowIcon(QIcon(APP_ICON))
         self.resize(1180, 760)
         self.setMinimumSize(940, 640)
 
@@ -142,7 +158,7 @@ class ShopOSWindow(QMainWindow):
 
         logo = QLabel()
         logo.setObjectName("brandLogo")
-        engine_pixmap = QPixmap(APP_ICON)
+        engine_pixmap = load_engine_pixmap()
         if not engine_pixmap.isNull():
             logo.setPixmap(
                 engine_pixmap.scaled(
@@ -667,7 +683,11 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setOrganizationName("John's Garage")
-    app.setWindowIcon(QIcon(APP_ICON))
+    engine_icon_pixmap = load_engine_pixmap()
+    if not engine_icon_pixmap.isNull():
+        app.setWindowIcon(QIcon(engine_icon_pixmap))
+    else:
+        app.setWindowIcon(QIcon(APP_ICON))
     app.setFont(QFont("Noto Sans", 10))
 
     window = ShopOSWindow()
