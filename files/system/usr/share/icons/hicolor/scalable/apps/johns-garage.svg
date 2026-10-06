@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f4f5"/>
+      <stop offset="0.45" stop-color="#9da6ad"/>
+      <stop offset="1" stop-color="#4d565e"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9363d"/>
+      <stop offset="1" stop-color="#74191e"/>
+    </linearGradient>
+  </defs>
+  <path d="M20 45h15l8-12h39l7 12h13l8 13v36H20z" fill="url(#red)" stroke="#e6e9eb" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="42" y="26" width="39" height="17" rx="4" fill="#22282d" stroke="url(#metal)" stroke-width="5"/>
+  <path d="M28 55h52v28H28z" fill="#252b30" stroke="url(#metal)" stroke-width="4"/>
+  <path d="M35 55v-10M49 55v-10M63 55v-10" stroke="#ee7a22" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="94" cy="73" r="19" fill="#171b1e" stroke="url(#metal)" stroke-width="5"/>
+  <circle cx="94" cy="73" r="7" fill="#ee7a22" stroke="#121518" stroke-width="3"/>
+  <path d="M80 96h33M30 97h38M18 69H8v16h10M108 58h12v13h-10" fill="none" stroke="url(#metal)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M42 90l-8 17M58 90l-8 17M72 90l7 17" stroke="#d8dde1" stroke-width="5" stroke-linecap="round"/>
+  <path d="M18 48l10-12 8 7" fill="none" stroke="#ee7a22" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
