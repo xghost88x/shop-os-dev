@@ -387,7 +387,12 @@ class ShopOSWindow(QMainWindow):
             QLabel#clock {
                 color: white;
                 font-size: 15px;
-                font-weight: 650;
+                font-weight: 700;
+            }
+            QLabel#statusLabel {
+                color: white;
+                font-size: 14px;
+                font-weight: 700;
             }
             QPushButton#backButton {
                 background: #20252a;
