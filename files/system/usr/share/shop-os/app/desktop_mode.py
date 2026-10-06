@@ -1,14 +1,15 @@
 """One dashboard per user; launcher returns to the existing fullscreen window."""
 import os
 from pathlib import Path
-from PySide6.QtCore import QLockFile, QStandardPaths
+from PySide6.QtCore import QLockFile, QStandardPaths, QTimer
 from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import QMessageBox
 
 
 class DashboardSession:
-    def __init__(self, app):
+    def __init__(self, app, requested_page="home"):
         self.window = None
+        self.requested_page = requested_page if requested_page in ("home", "videos", "parts") else "home"
         runtime = QStandardPaths.writableLocation(QStandardPaths.RuntimeLocation)
         if not runtime:
             runtime = QStandardPaths.writableLocation(QStandardPaths.TempLocation)
@@ -24,6 +25,8 @@ class DashboardSession:
         client.connectToServer(self.name)
         if not client.waitForConnected(500):
             return False
+        client.write((self.requested_page + "\n").encode())
+        client.waitForBytesWritten(500)
         client.disconnectFromServer()
         return True
 
@@ -45,7 +48,17 @@ class DashboardSession:
     def restore(self):
         while self.server.hasPendingConnections():
             client = self.server.nextPendingConnection()
-            client.close()
-            client.deleteLater()
-        if self.window is not None:
-            self.window.return_to_dashboard()
+            def receive(socket=client):
+                if not socket.canReadLine():
+                    return
+                request = bytes(socket.readLine(64)).decode("utf-8", errors="replace").strip()
+                if self.window is not None:
+                    self.window.return_to_dashboard({"videos": 6, "parts": 1}.get(request, 0))
+                socket.close()
+                socket.deleteLater()
+            client.readyRead.connect(receive)
+            if client.bytesAvailable():
+                receive()
+            else:
+                QTimer.singleShot(2000, client.deleteLater)
+

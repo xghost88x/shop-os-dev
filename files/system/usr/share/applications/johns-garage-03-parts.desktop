@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Parts Lookup
+Exec=python3 /usr/share/shop-os/app/shop_os.py --page=parts
+Icon=/usr/share/shop-os/desktop/parts.svg
+Terminal=false
+Categories=Utility;
+StartupNotify=true

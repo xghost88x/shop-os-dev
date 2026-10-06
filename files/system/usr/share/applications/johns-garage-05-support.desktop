@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Remote Support
+Exec=flatpak run com.rustdesk.RustDesk
+Icon=/usr/share/shop-os/desktop/support.svg
+Terminal=false
+Categories=Utility;
+StartupNotify=true

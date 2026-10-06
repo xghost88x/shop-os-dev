@@ -384,8 +384,9 @@ class ShopOSWindow(QMainWindow):
         self.show_page(0)
         self.showMinimized()
 
-    def return_to_dashboard(self):
-        self.show_page(0)
+    def return_to_dashboard(self, page=0):
+        titles = {0: "HOME  /  WORKSTATION", 1: "PARTS LOOKUP", 6: "VIDEO TUTORIALS"}
+        self.show_page(page, titles.get(page, "HOME  /  WORKSTATION"))
         self.showFullScreen()
         self.raise_()
         self.activateWindow()
@@ -707,15 +708,17 @@ def main():
         app.setWindowIcon(QIcon(APP_ICON))
     app.setFont(QFont("Noto Sans", 10))
 
-    session = DashboardSession(app)
+    requested_page = next((arg.split("=", 1)[1] for arg in sys.argv if arg.startswith("--page=")), "home")
+    session = DashboardSession(app, requested_page)
     if not session.start():
         return
     window = ShopOSWindow()
     session.window = window
-    window.showFullScreen()
+    window.return_to_dashboard({"videos": 6, "parts": 1}.get(requested_page, 0))
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
     main()
+
 

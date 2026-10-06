@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=John's Garage Desktop Setup
+Comment=Set up the simple branded workshop desktop once
+Exec=python3 /usr/share/shop-os/app/setup_desktop.py
+OnlyShowIn=KDE;
+TryExec=python3
+Terminal=false
+NoDisplay=true
+StartupNotify=false

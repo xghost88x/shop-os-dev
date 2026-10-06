@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Video Tutorials
+Exec=python3 /usr/share/shop-os/app/shop_os.py --page=videos
+Icon=/usr/share/shop-os/desktop/videos.svg
+Terminal=false
+Categories=Utility;
+StartupNotify=true

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=John’s Garage
+Exec=python3 /usr/share/shop-os/app/shop_os.py
+Icon=/usr/share/shop-os/assets/johns-garage.png
+Terminal=false
+Categories=Utility;
+NoDisplay=true
+StartupNotify=true
