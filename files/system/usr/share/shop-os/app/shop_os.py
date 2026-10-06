@@ -142,7 +142,17 @@ class ShopOSWindow(QMainWindow):
 
         logo = QLabel()
         logo.setObjectName("brandLogo")
-        logo.setPixmap(QIcon(APP_ICON).pixmap(QSize(64, 64)))
+        engine_pixmap = QPixmap(APP_ICON)
+        if not engine_pixmap.isNull():
+            logo.setPixmap(
+                engine_pixmap.scaled(
+                    QSize(64, 64),
+                    Qt.KeepAspectRatio,
+                    Qt.SmoothTransformation,
+                )
+            )
+        else:
+            logo.setText("JG")
         logo.setFixedSize(68, 68)
         logo.setAlignment(Qt.AlignCenter)
 
