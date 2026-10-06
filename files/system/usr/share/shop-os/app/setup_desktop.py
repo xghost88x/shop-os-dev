@@ -3,6 +3,7 @@
 import json
 import shutil
 import sys
+import subprocess
 from pathlib import Path
 from PySide6.QtCore import QCoreApplication, QStandardPaths, QTimer
 from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
@@ -10,7 +11,7 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
 PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
-MARKER = STATE / "simple-desktop-v2.applied"
+MARKER = STATE / "simple-desktop-v3.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -41,13 +42,19 @@ class Setup:
                 source = CONFIG / filename
                 if source.exists():
                     shutil.copy2(source, backup / filename)
-        shortcuts = STATE / "shortcuts"
+        shortcuts = STATE / "clean-desktop"
         shortcuts.mkdir(exist_ok=True)
-        apps = Path("/usr/share/applications")
-        for source in sorted(apps.glob("johns-garage-0*.desktop")):
-            target = shortcuts / source.name
-            if not target.exists():
-                target.symlink_to(source)
+        color_tool = shutil.which("plasma-apply-colorscheme")
+        if not color_tool:
+            print("John's Garage desktop setup: color scheme tool unavailable.", file=sys.stderr)
+            return
+        try:
+            for arguments in [["BreezeLight"], ["--accent-color", "#617d98"]]:
+                subprocess.run([color_tool, *arguments], check=True, timeout=10,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        except (subprocess.SubprocessError, OSError) as error:
+            print("John's Garage desktop colors:", error, file=sys.stderr)
+            return
         layout = "panel-tweaks.js" if PREVIOUS_MARKER.exists() else "layout.js"
         script = (ASSETS / layout).read_text().replace("__SHORTCUT_URL__", json.dumps(shortcuts.as_uri()))
         interface.setTimeout(15000)
@@ -59,7 +66,7 @@ class Setup:
         if "JOHNS_GARAGE_DESKTOP_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied slim KDE panel v2.\n")
+        MARKER.write_text("Applied clean silver and slate desktop v3.\n")
         self.app.quit()
 
 

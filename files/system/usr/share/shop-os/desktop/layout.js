@@ -5,7 +5,7 @@ var required = ["org.kde.plasma.kickoff", "org.kde.plasma.icontasks", "org.kde.p
 for (var i=0; i<required.length; i++) {
     if (knownWidgetTypes.indexOf(required[i]) < 0) throw new Error("Missing widget: " + required[i]);
 }
-theme = "breeze-dark";
+theme = "default";
 for (var i=0; i<allDesktops.length; i++) {
     var desktop = allDesktops[i];
     desktop.wallpaperPlugin = "org.kde.image";

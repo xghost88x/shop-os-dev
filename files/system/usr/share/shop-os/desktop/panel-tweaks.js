@@ -1,3 +1,13 @@
+// Clean desktop: retain files in their original folders without displaying shortcuts.
+theme = "default";
+var allDesktops = desktops();
+if (!allDesktops.length) throw new Error("Desktop is not ready yet");
+for (var d = 0; d < allDesktops.length; d++) {
+    var desktop = allDesktops[d];
+    desktop.currentConfigGroup = ["General"];
+    desktop.writeConfig("url", __SHORTCUT_URL__);
+    desktop.reloadConfig();
+}
 // Preserve the existing KDE panel and its widgets.
 var list = panels();
 if (!list.length) throw new Error("No panel available");
