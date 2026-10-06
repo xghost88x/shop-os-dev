@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from workshop_ui import WorkshopTile, WorkshopPanel, BrandTitle
+from desktop_mode import DashboardSession
 from pathlib import Path
 
 from PySide6.QtCore import QDateTime, QPointF, QRectF, QSize, Qt, QTimer, QUrl
@@ -372,11 +373,22 @@ class ShopOSWindow(QMainWindow):
         page, layout = self.subpage(
             "Workstation settings and information for John's Garage."
         )
+        layout.addWidget(self.action_button("Show Desktop", self.show_desktop, True, "user-desktop"))
         layout.addWidget(self.action_button("KDE System Settings", self.open_system_settings, True, "settings-configure"))
         layout.addWidget(self.action_button("Network Settings", self.open_network_settings, False, "network-wired"))
         layout.addWidget(self.action_button("About John's Garage", self.show_about, False, "help-about"))
         layout.addStretch(1)
         return page
+
+    def show_desktop(self):
+        self.show_page(0)
+        self.showMinimized()
+
+    def return_to_dashboard(self):
+        self.show_page(0)
+        self.showFullScreen()
+        self.raise_()
+        self.activateWindow()
 
     def show_page(self, index, title="HOME  /  WORKSTATION"):
         self.stack.setCurrentIndex(index)
@@ -695,8 +707,12 @@ def main():
         app.setWindowIcon(QIcon(APP_ICON))
     app.setFont(QFont("Noto Sans", 10))
 
+    session = DashboardSession(app)
+    if not session.start():
+        return
     window = ShopOSWindow()
-    window.show()
+    session.window = window
+    window.showFullScreen()
     sys.exit(app.exec())
 
 
