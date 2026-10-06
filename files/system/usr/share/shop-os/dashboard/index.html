@@ -68,6 +68,12 @@ button,.button{
   font-weight:650;
   font-size:14px
 }
+.button-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:4px
+}
 .disabled{
   background:var(--panel2);
   border-color:var(--border);
@@ -102,12 +108,6 @@ code{
 
   <section class="grid">
     <article class="card">
-      <h2>Current Vehicle / Job</h2>
-      <p>This will become the central workspace for the active vehicle, customer/job notes, photos, service history, and work status.</p>
-      <span class="button disabled">Coming next</span>
-    </article>
-
-    <article class="card">
       <h2>Service Manuals</h2>
       <p>Open PDFs with Okular now. A searchable local manual library will be wired into this dashboard later.</p>
       <span class="button disabled">Library coming soon</span>
@@ -115,8 +115,13 @@ code{
 
     <article class="card">
       <h2>Parts & Research</h2>
-      <p>Firefox is installed system-wide for parts lookup, repair information, wiring references, and technical research.</p>
-      <span class="button disabled">Custom links pending</span>
+      <p>Quick access to the parts suppliers used most often in the shop.</p>
+      <div class="button-row">
+        <a class="button" href="https://www.rockauto.com/" target="_blank" rel="noopener noreferrer">RockAuto</a>
+        <a class="button" href="https://www.oreillyauto.com/" target="_blank" rel="noopener noreferrer">O'Reilly Auto Parts</a>
+        <a class="button" href="https://shop.advanceautoparts.com/" target="_blank" rel="noopener noreferrer">Advance Auto Parts</a>
+        <a class="button" href="https://www.autozone.com/" target="_blank" rel="noopener noreferrer">AutoZone</a>
+      </div>
     </article>
 
     <article class="card">
