@@ -35,7 +35,8 @@ from PySide6.QtWidgets import (
 )
 
 APP_NAME = "John's Garage"
-APP_ICON = "/usr/share/icons/hicolor/scalable/apps/johns-garage.svg"
+APP_ICON = "/usr/share/icons/hicolor/64x64/apps/johns-garage.png"
+CURSOR_ICON = "/usr/share/shop-os/assets/wrench-pointer.png"
 MANUALS_DIR = Path.home() / "Documents" / "Shop Manuals"
 
 PARTS_SITES = {
@@ -47,61 +48,12 @@ PARTS_SITES = {
 
 
 def make_wrench_pointer():
-    """Create a crisp combination-wrench pointer with the jaw as the hotspot."""
-    size = 48
-    pix = QPixmap(size, size)
-    pix.fill(Qt.transparent)
-
-    # Build a proper open-end / ring-end wrench silhouette.
-    jaw_outer = QPainterPath()
-    jaw_outer.addEllipse(QRectF(27, 1, 19, 19))
-    jaw_inner = QPainterPath()
-    jaw_inner.addEllipse(QRectF(32, 6, 9, 9))
-    jaw = jaw_outer.subtracted(jaw_inner)
-
-    # Open the jaw toward the upper-right.
-    jaw_cut = QPainterPath()
-    jaw_cut.moveTo(36, 0)
-    jaw_cut.lineTo(48, 0)
-    jaw_cut.lineTo(48, 16)
-    jaw_cut.lineTo(38, 12)
-    jaw_cut.closeSubpath()
-    jaw = jaw.subtracted(jaw_cut)
-
-    shaft = QPainterPath()
-    shaft.moveTo(12, 39)
-    shaft.lineTo(8, 35)
-    shaft.lineTo(28, 15)
-    shaft.lineTo(34, 21)
-    shaft.closeSubpath()
-
-    ring_outer = QPainterPath()
-    ring_outer.addEllipse(QRectF(2, 31, 16, 16))
-    ring_inner = QPainterPath()
-    ring_inner.addEllipse(QRectF(6.5, 35.5, 7, 7))
-    ring = ring_outer.subtracted(ring_inner)
-
-    wrench = jaw.united(shaft).united(ring)
-
-    painter = QPainter(pix)
-    painter.setRenderHint(QPainter.Antialiasing, True)
-
-    # Black outline.
-    painter.setPen(QPen(QColor("#080a0c"), 5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-    painter.setBrush(QColor("#c9d0d5"))
-    painter.drawPath(wrench)
-
-    # Metallic center.
-    painter.setPen(QPen(QColor("#eef1f3"), 1.5))
-    painter.setBrush(QColor("#aeb7be"))
-    painter.drawPath(wrench)
-
-    # Small orange brand accent down the handle.
-    painter.setPen(QPen(QColor("#ee7a22"), 2.2, Qt.SolidLine, Qt.RoundCap))
-    painter.drawLine(QPointF(13, 34), QPointF(27, 20))
-    painter.end()
-
-    return QCursor(pix, 45, 3)
+    """Use the exact wrench artwork supplied for John's Garage."""
+    pix = QPixmap(CURSOR_ICON)
+    if pix.isNull():
+        return QCursor(Qt.ArrowCursor)
+    # The source wrench already points upper-left; the open jaw is the click point.
+    return QCursor(pix, 4, 4)
 
 
 def run_detached(program, args=None):
