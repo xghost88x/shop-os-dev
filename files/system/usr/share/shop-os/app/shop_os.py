@@ -105,6 +105,7 @@ class ShopOSWindow(QMainWindow):
         self.stack.addWidget(self.build_health())
         self.stack.addWidget(self.build_updates())
         self.stack.addWidget(self.build_settings())
+        self.stack.addWidget(self.build_videos())
         outer.addWidget(self.stack, 1)
 
         outer.addWidget(self.build_footer())
@@ -256,7 +257,7 @@ class ShopOSWindow(QMainWindow):
         grid.setVerticalSpacing(16)
 
         tiles = [
-            ("SERVICE MANUALS", "x-office-document", self.open_manuals),
+            ("REPAIR & MAINTENANCE VIDEOS", "video-x-generic", lambda: self.show_page(6, "REPAIR & MAINTENANCE VIDEOS")),
             ("PARTS LOOKUP", "applications-internet", lambda: self.show_page(1, "PARTS LOOKUP")),
             ("REMOTE SUPPORT", "preferences-desktop-remote-desktop", lambda: self.show_page(2, "REMOTE SUPPORT")),
             ("SYSTEM HEALTH", "utilities-system-monitor", lambda: self.show_page(3, "SYSTEM HEALTH")),
@@ -290,6 +291,23 @@ class ShopOSWindow(QMainWindow):
 
         layout.addWidget(intro_box)
         return page, layout
+
+    def build_videos(self):
+        page, layout = self.subpage(
+            "Choose a video source. Look up your vehicle's year, make, model and engine to find relevant repair and maintenance videos."
+        )
+        layout.addWidget(self.action_button(
+            "CarCareKiosk — Repair & Maintenance Videos",
+            lambda: QDesktopServices.openUrl(QUrl("https://www.carcarekiosk.com/")),
+            True, "video-x-generic",
+        ))
+        layout.addWidget(self.action_button(
+            "YouTube — Search Repair Videos",
+            lambda: QDesktopServices.openUrl(QUrl("https://www.youtube.com/")),
+            False, "video-x-generic",
+        ))
+        layout.addStretch(1)
+        return page
 
     def build_parts(self):
         page, layout = self.subpage(
