@@ -24,6 +24,7 @@ modules:
         - pciutils
         - usbutils
         - openssh-server
+        - python3-pyside6
     remove:
       packages:
         - firefox
