@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install the simple workshop desktop once, preserving the user's old layout."""
+"""Apply the clean silver/slate desktop revision, preserving the original layout."""
 import json
 import shutil
 import sys
