@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Shop OS Dashboard
-Comment=Open the Shop OS automotive workstation dashboard
-Exec=xdg-open file:///usr/share/shop-os/dashboard/index.html
+Name=Shop OS
+Comment=Open the Shop OS automotive workstation
+Exec=python3 /usr/share/shop-os/app/shop_os.py
 Icon=applications-engineering
 Terminal=false
 Categories=Utility;System;
