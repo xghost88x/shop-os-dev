@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Shop OS
-Comment=Open the Shop OS automotive workstation
+Name=John's Garage
+Comment=Open John's Garage automotive service console
 Exec=python3 /usr/share/shop-os/app/shop_os.py
 Icon=applications-engineering
 Terminal=false
