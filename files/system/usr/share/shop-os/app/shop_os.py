@@ -3,6 +3,7 @@
 import shutil
 import subprocess
 import sys
+from workshop_ui import WorkshopTile, WorkshopPanel, BrandTitle
 from pathlib import Path
 
 from PySide6.QtCore import QDateTime, QPointF, QRectF, QSize, Qt, QTimer, QUrl
@@ -93,7 +94,9 @@ class ShopOSWindow(QMainWindow):
         outer.setSpacing(0)
 
         outer.addWidget(self.build_header())
-        outer.addWidget(self.build_subheader())
+        self.subheader = self.build_subheader()
+        self.subheader.hide()
+        outer.addWidget(self.subheader)
 
         self.stack = QStackedWidget()
         self.stack.addWidget(self.build_home())
@@ -124,28 +127,17 @@ class ShopOSWindow(QMainWindow):
         return btn
 
     def tile(self, title, icon_name, callback, number):
-        btn = QToolButton()
+        btn = WorkshopTile(title, number)
         self.set_pointer(btn)
-        btn.setObjectName("scannerTile")
-        btn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        btn.setText(f"{number:02d}   {title}")
-        btn.setIcon(QIcon.fromTheme(icon_name))
-        btn.setIconSize(QSize(72, 72))
-        btn.setMinimumHeight(190)
         btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         btn.clicked.connect(callback)
-
-        shadow = QGraphicsDropShadowEffect(btn)
-        shadow.setBlurRadius(18)
-        shadow.setOffset(0, 5)
-        shadow.setColor(QColor(0, 0, 0, 145))
-        btn.setGraphicsEffect(shadow)
         return btn
 
     def build_header(self):
-        frame = QFrame()
+        frame = WorkshopPanel()
         self.set_pointer(frame)
         frame.setObjectName("header")
+        frame.setMinimumHeight(144)
         layout = QHBoxLayout(frame)
         layout.setContentsMargins(22, 10, 22, 10)
         layout.setSpacing(16)
@@ -156,28 +148,18 @@ class ShopOSWindow(QMainWindow):
         if not engine_pixmap.isNull():
             logo.setPixmap(
                 engine_pixmap.scaled(
-                    QSize(74, 74),
+                    QSize(120, 120),
                     Qt.KeepAspectRatio,
                     Qt.SmoothTransformation,
                 )
             )
         else:
             logo.setText("JG")
-        logo.setFixedSize(78, 78)
+        logo.setFixedSize(124, 124)
         logo.setAlignment(Qt.AlignCenter)
 
-        brand = QWidget()
+        brand = BrandTitle()
         self.set_pointer(brand)
-        brand_layout = QVBoxLayout(brand)
-        brand_layout.setContentsMargins(0, 0, 0, 0)
-        brand_layout.setSpacing(0)
-
-        title = QLabel("JOHN'S GARAGE")
-        title.setObjectName("headerTitle")
-        subtitle = QLabel("AUTOMOTIVE SERVICE CONSOLE")
-        subtitle.setObjectName("brandSubtitle")
-        brand_layout.addWidget(title)
-        brand_layout.addWidget(subtitle)
 
         self.clock = QLabel()
         self.clock.setObjectName("clock")
@@ -194,8 +176,10 @@ class ShopOSWindow(QMainWindow):
 
         layout.addWidget(logo)
         layout.addWidget(brand, 2)
-        layout.addWidget(self.clock, 1)
-        layout.addWidget(self.status_label, 2)
+        layout.addStretch(1)
+        self.clock.setMinimumSize(200, 88)
+        layout.addWidget(self.clock)
+        self.status_label.hide()
         return frame
 
     def build_subheader(self):
@@ -224,54 +208,48 @@ class ShopOSWindow(QMainWindow):
         return frame
 
     def build_footer(self):
-        frame = QFrame()
+        frame = WorkshopPanel()
         self.set_pointer(frame)
         frame.setObjectName("footer")
         layout = QHBoxLayout(frame)
-        layout.setContentsMargins(22, 8, 22, 8)
-        layout.addWidget(QLabel("JOHN'S GARAGE  •  SERVICE CONSOLE"))
-        layout.addStretch(1)
-        layout.addWidget(QLabel("SIGNED ATOMIC IMAGE  •  READY"))
+        layout.setContentsMargins(28, 14, 28, 14)
+        storage = QLabel("●  Storage: available")
+        network = QLabel("●  Network: checking…")
+        ready = QLabel("●  Console: ready")
+        for label in [storage, network, ready]:
+            label.setObjectName("footerStatus")
+            layout.addWidget(label)
+            if label is not ready:
+                layout.addStretch(1)
+        self.network_label = network
+        self.network_timer = QTimer(self)
+        self.network_timer.timeout.connect(self.update_network_status)
+        self.network_timer.start(15000)
+        self.update_network_status()
         return frame
+
+    def update_network_status(self):
+        try:
+            interfaces = Path("/sys/class/net").iterdir()
+            connected = any(p.name != "lo" and (p / "operstate").read_text().strip() == "up"
+                            for p in interfaces)
+            self.network_label.setText("●  Network: connected" if connected else "○  Network: offline")
+        except OSError:
+            self.network_label.setText("○  Network: unknown")
 
     def build_home(self):
         page = QWidget()
         self.set_pointer(page)
         page.setObjectName("homePage")
         outer = QVBoxLayout(page)
-        outer.setContentsMargins(24, 20, 24, 22)
+        outer.setContentsMargins(20, 12, 20, 16)
         outer.setSpacing(16)
 
-        hero = QFrame()
-        self.set_pointer(hero)
-        hero.setObjectName("heroPanel")
-        hero_layout = QHBoxLayout(hero)
-        hero_layout.setContentsMargins(18, 11, 18, 11)
-
-        badge = QLabel("JG")
-        badge.setObjectName("heroBadge")
-        badge.setAlignment(Qt.AlignCenter)
-        badge.setFixedSize(42, 42)
-
-        hero_left = QLabel("DIAGNOSTIC CONTROL PANEL")
-        hero_left.setObjectName("heroTitle")
-
-        hero_desc = QLabel("SELECT MODULE")
-        hero_desc.setObjectName("heroText")
-        hero_desc.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-
-        hero_layout.addWidget(badge)
-        hero_layout.addSpacing(8)
-        hero_layout.addWidget(hero_left)
-        hero_layout.addStretch(1)
-        hero_layout.addWidget(hero_desc)
-        outer.addWidget(hero)
-
-        console = QFrame()
+        console = WorkshopPanel()
         self.set_pointer(console)
         console.setObjectName("consoleFrame")
         grid = QGridLayout(console)
-        grid.setContentsMargins(18, 18, 18, 18)
+        grid.setContentsMargins(14, 14, 14, 14)
         grid.setHorizontalSpacing(16)
         grid.setVerticalSpacing(16)
 
@@ -382,6 +360,7 @@ class ShopOSWindow(QMainWindow):
 
     def show_page(self, index, title="HOME  /  WORKSTATION"):
         self.stack.setCurrentIndex(index)
+        self.subheader.setVisible(index != 0)
         self.back_btn.setVisible(index != 0)
         self.page_title.setText(title if index != 0 else "HOME  /  WORKSTATION")
 
@@ -459,7 +438,7 @@ class ShopOSWindow(QMainWindow):
         )
 
     def update_clock(self):
-        self.clock.setText(QDateTime.currentDateTime().toString("ddd MMM d   h:mm AP"))
+        self.clock.setText(QDateTime.currentDateTime().toString("h:mm AP\nddd MMM d, yyyy"))
 
     def apply_style(self):
         self.setStyleSheet("""
@@ -469,11 +448,11 @@ class ShopOSWindow(QMainWindow):
                 font-family: "Noto Sans", "Segoe UI", sans-serif;
             }
 
-            QFrame#header {
+            QFrame#unusedHeader {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #101419, stop:0.17 #151a1f, stop:0.5 #871d22, stop:0.72 #a5272d, stop:1 #14191e);
+                    stop:0 #161b1e, stop:0.5 #101416, stop:1 #202528);
                 border-top: 1px solid #4b5359;
-                border-bottom: 4px solid #ee7a22;
+                border-bottom: 3px solid #ec491a;
             }
 
             QLabel#brandLogo {
@@ -498,8 +477,12 @@ class ShopOSWindow(QMainWindow):
 
             QLabel#clock {
                 color: white;
-                font-size: 15px;
+                font-size: 20px;
                 font-weight: 800;
+                background: #0c1012;
+                border: 3px solid #8a301b;
+                border-radius: 10px;
+                padding: 10px;
             }
 
             QLabel#statusLabel {
@@ -573,7 +556,7 @@ class ShopOSWindow(QMainWindow):
                 letter-spacing: 2px;
             }
 
-            QFrame#consoleFrame {
+            QFrame#unusedConsoleFrame {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #151a1e, stop:1 #0d1013);
                 border: 2px solid #424a51;
@@ -613,7 +596,7 @@ class ShopOSWindow(QMainWindow):
             QFrame#infoPanel {
                 background: #181d21;
                 border: 1px solid #3d464e;
-                border-left: 5px solid #be3037;
+                border-left: 5px solid #f04b19;
                 border-radius: 8px;
             }
 
@@ -639,12 +622,12 @@ class ShopOSWindow(QMainWindow):
             }
 
             QPushButton#primaryAction {
-                background: #9c252b;
-                border-color: #c43a40;
+                background: #c33b13;
+                border-color: #f76a2f;
             }
 
             QPushButton#primaryAction:hover {
-                background: #b92c33;
+                background: #e34c19;
                 border-color: #ee7a22;
             }
 
@@ -658,7 +641,7 @@ class ShopOSWindow(QMainWindow):
                 font-size: 13px;
             }
 
-            QFrame#footer {
+            QFrame#unusedFooter {
                 background: #080a0c;
                 border-top: 1px solid #30373d;
             }
@@ -668,6 +651,16 @@ class ShopOSWindow(QMainWindow):
                 font-size: 10px;
                 font-weight: 700;
                 letter-spacing: 1px;
+            }
+            QFrame#footer QLabel#footerStatus {
+                color: #b9c4b5;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: 0px;
+            }
+            QStackedWidget, QStackedWidget > QWidget {
+                background: #101416;
+                color: #f5f6f7;
             }
         """)
 
@@ -690,3 +683,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
