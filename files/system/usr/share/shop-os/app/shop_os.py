@@ -177,9 +177,11 @@ class ShopOSWindow(QMainWindow):
         layout.addWidget(logo)
         layout.addWidget(brand, 2)
         layout.addStretch(1)
-        self.clock.setMinimumSize(200, 88)
+        self.clock.setMinimumSize(180, 80)
         layout.addWidget(self.clock)
-        self.status_label.hide()
+        self.status_label.setText("●  Wi-Fi\n●  Updates OK\n●  Support Ready")
+        self.status_label.setMinimumWidth(135)
+        layout.addWidget(self.status_label)
         return frame
 
     def build_subheader(self):
@@ -479,10 +481,9 @@ class ShopOSWindow(QMainWindow):
                 color: white;
                 font-size: 20px;
                 font-weight: 800;
-                background: #0c1012;
-                border: 3px solid #8a301b;
-                border-radius: 10px;
-                padding: 10px;
+                background: transparent;
+                border: none;
+                padding: 0px;
             }
 
             QLabel#statusLabel {
