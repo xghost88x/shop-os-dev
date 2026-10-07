@@ -11,7 +11,7 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
 PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
-MARKER = STATE / "simple-desktop-v7.applied"
+MARKER = STATE / "simple-desktop-v8.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -60,16 +60,17 @@ class Setup:
             return
         layout = "panel-tweaks.js" if PREVIOUS_MARKER.exists() else "layout.js"
         script = (ASSETS / layout).read_text().replace("__SHORTCUT_URL__", json.dumps(shortcuts.as_uri()))
+        script += "\n" + (ASSETS / "service-center-layout.js").read_text()
         interface.setTimeout(15000)
         result = interface.call("evaluateScript", script)
         if result.type() == QDBusMessage.ErrorMessage:
             print("John's Garage desktop setup:", result.errorMessage(), file=sys.stderr)
             return
         output = "\n".join(str(value) for value in result.arguments())
-        if "JOHNS_GARAGE_DESKTOP_READY" not in output:
+        if "JOHNS_GARAGE_DESKTOP_READY" not in output or "DADS_GARAGE_SERVICE_CENTER_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied full wallpaper without cropping v7.\n")
+        MARKER.write_text("Applied Service Center and workstation widget v8.\n")
         self.app.quit()
 
 
@@ -83,3 +84,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

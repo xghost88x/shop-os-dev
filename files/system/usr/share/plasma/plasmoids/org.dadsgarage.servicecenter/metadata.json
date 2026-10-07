@@ -1,0 +1,18 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Id": "org.dadsgarage.servicecenter",
+    "Name": "Service Center",
+    "Description": "Dad's Garage OS service menu",
+    "Icon": "applications-system",
+    "Category": "System Information",
+    "Version": "1.0",
+    "License": "Apache-2.0",
+    "Authors": [
+      {
+        "Name": "Dad's Garage OS"
+      }
+    ]
+  },
+  "X-Plasma-API-Minimum-Version": "6.0"
+}
