@@ -38,10 +38,10 @@ PlasmoidItem {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 20
-            spacing: 7
+            spacing: 6
             Image {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 55
+                Layout.preferredHeight: 45
                 source: "file:///usr/share/shop-os/desktop/dads-garage-start.png"
                 fillMode: Image.PreserveAspectFit
                 smooth: true
@@ -54,15 +54,53 @@ PlasmoidItem {
                       "BATTERY  " + root.status.battery + "%  ·  " + (root.status.charging ? "Charging / plugged in" : "On battery")
                 color:"#e5edf5"; font.pixelSize:12
             }
-            ProgressBar {
-                implicitHeight: 6
-                background: Rectangle { implicitHeight:6; color:"#0d1218"; radius:3 }
-                contentItem: Item {
-                    implicitHeight:6
-                    Rectangle { width:parent.width*parent.parent.visualPosition; height:parent.height; radius:3; color:"#94adc2" }
+            Item {
+                id: fuelGauge
+                Layout.fillWidth: true
+                Layout.preferredHeight: 26
+                property bool available: root.online && root.status.battery !== null
+                property real level: available ? Math.max(0, Math.min(100, Number(root.status.battery))) / 100 : 0
+                Label { anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; text: "E"; color: "#ef6666"; font.bold: true; font.pixelSize: 11 }
+                Label { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; text: "F"; color: "#67d790"; font.bold: true; font.pixelSize: 11 }
+                Rectangle {
+                    id: fuelTrack
+                    anchors.left: parent.left; anchors.right: parent.right
+                    anchors.leftMargin: 18; anchors.rightMargin: 18
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 14; radius: 4
+                    border.color: "#7d8a97"
+                    opacity: fuelGauge.available ? 1 : 0.35
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0; color: "#df4b4b" }
+                        GradientStop { position: 0.5; color: "#e4bf4f" }
+                        GradientStop { position: 1; color: "#42bb78" }
+                    }
+                    Repeater {
+                        model: 9
+                        Rectangle {
+                            required property int index
+                            x: (index + 1) * fuelTrack.width / 10
+                            width: 1; height: index === 4 ? 9 : 5
+                            anchors.bottom: parent.bottom
+                            color: "#c0171c22"
+                        }
+                    }
+                    Rectangle {
+                        visible: fuelGauge.available
+                        x: Math.max(0, Math.min(parent.width - width, fuelGauge.level * parent.width - width / 2))
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 4; height: 24; radius: 2
+                        color: "#f7fafc"; border.color: "#18202a"
+                        Behavior on x { NumberAnimation { duration: 450; easing.type: Easing.InOutQuad } }
+                    }
                 }
-                Layout.fillWidth:true; from:0; to:100
-                value: root.online && root.status.battery !== null ? root.status.battery : 100
+                Label {
+                    visible: !fuelGauge.available
+                    anchors.centerIn: parent
+                    text: root.online ? "AC POWER" : "—"
+                    color: "#dae3ec"; font.pixelSize: 9; font.bold: true
+                }
             }
             Repeater {
                 model: [
