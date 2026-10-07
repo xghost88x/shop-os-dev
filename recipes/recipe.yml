@@ -25,6 +25,8 @@ modules:
         - usbutils
         - openssh-server
         - python3-pyside6
+        - plymouth
+        - plymouth-plugin-script
     remove:
       packages:
         - firefox
@@ -41,5 +43,11 @@ modules:
           - org.kde.gwenview
           - com.rustdesk.RustDesk
       - scope: user
+
+  - type: script
+    scripts:
+      - configure-boot.sh
+
+  - type: initramfs
 
   - type: signing

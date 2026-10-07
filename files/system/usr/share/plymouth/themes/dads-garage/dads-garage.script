@@ -1,0 +1,64 @@
+Window.SetBackgroundTopColor(0.12, 0.15, 0.18);
+Window.SetBackgroundBottomColor(0.025, 0.035, 0.05);
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+center_x = Window.GetX() + screen_width / 2;
+center_y = Window.GetY() + screen_height / 2;
+brand_width = screen_width * 0.50;
+if (brand_width > 640) brand_width = 640;
+brand_source = Image("wordmark.png");
+brand_image = brand_source.Scale(brand_width, brand_width * brand_source.GetHeight() / brand_source.GetWidth());
+brand = Sprite(brand_image);
+brand.SetPosition(center_x - brand_image.GetWidth() / 2, center_y - 50, 1);
+engine_source = Image("engine.png");
+engine_size = screen_height * 0.14;
+if (engine_size > 110) engine_size = 110;
+engine_image = engine_source.Scale(engine_size, engine_size);
+engine = Sprite(engine_image);
+engine.SetPosition(center_x - engine_size / 2, center_y - engine_size - 65, 1);
+os_image = Image.Text("DAD'S GARAGE OS", 0.78, 0.83, 0.88);
+os_label = Sprite(os_image);
+os_y = center_y - 45 + brand_image.GetHeight();
+os_label.SetPosition(center_x - os_image.GetWidth() / 2, os_y, 1);
+gauge_width = brand_width * 0.75;
+gauge_x = center_x - gauge_width / 2;
+gauge_y = os_y + os_image.GetHeight() + 35;
+track_image = Image("track.png").Scale(gauge_width, 5);
+track = Sprite(track_image);
+track.SetPosition(gauge_x, gauge_y, 1);
+fill_source = Image("fill.png");
+fill = Sprite(fill_source.Scale(1, 5));
+fill.SetPosition(gauge_x, gauge_y, 2);
+status_image = Image.Text("STARTING YOUR WORKSHOP", 0.53, 0.64, 0.74);
+status_label = Sprite(status_image);
+status_label.SetPosition(center_x - status_image.GetWidth() / 2, gauge_y + 25, 1);
+prompt = Sprite();
+
+fun progress_callback(duration, progress) {
+    width = Math.Int(gauge_width * progress);
+    if (width < 1) width = 1;
+    if (width > gauge_width) width = gauge_width;
+    fill.SetImage(fill_source.Scale(width, 5));
+}
+Plymouth.SetBootProgressFunction(progress_callback);
+
+fun show_prompt(text) {
+    image = Image.Text(text, 0.90, 0.93, 0.96);
+    prompt.SetImage(image);
+    prompt.SetPosition(center_x - image.GetWidth() / 2, gauge_y + 60, 100);
+    prompt.SetOpacity(1);
+}
+fun display_password_callback(text, bullets) {
+    masked = "";
+    for (i = 0; i < bullets; i++) masked += "*";
+    show_prompt(text + " " + masked);
+}
+fun display_question_callback(text, entry) {
+    show_prompt(text + " " + entry);
+}
+fun display_normal_callback() {
+    prompt.SetOpacity(0);
+}
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetDisplayQuestionFunction(display_question_callback);
+Plymouth.SetDisplayNormalFunction(display_normal_callback);

@@ -1,0 +1,12 @@
+[Unit]
+Description=Configure Dad's Garage automatic login
+After=systemd-user-sessions.service
+Before=display-manager.service sddm.service
+ConditionPathExists=!/var/lib/dads-garage/autologin-v1.applied
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/share/shop-os/app/setup_autologin.py
+
+[Install]
+WantedBy=graphical.target
