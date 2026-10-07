@@ -21,6 +21,7 @@ ACTIONS = {
     'videos': ['python3', '/usr/share/shop-os/app/shop_os.py', '--page=videos'],
     'parts': ['python3', '/usr/share/shop-os/app/shop_os.py', '--page=parts'],
     'files': ['dolphin'],
+    'office': ['flatpak', 'run', 'org.libreoffice.LibreOffice'],
     'firefox': ['flatpak', 'run', 'org.mozilla.firefox'],
     'chromium': ['flatpak', 'run', 'org.chromium.Chromium'],
     'support': ['flatpak', 'run', 'com.rustdesk.RustDesk'],

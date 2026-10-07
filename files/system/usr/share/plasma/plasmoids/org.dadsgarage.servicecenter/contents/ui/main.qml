@@ -107,6 +107,7 @@ PlasmoidItem {
                             {label:"Repair Videos", detail:"Tutorials and repair guidance", action:"videos"},
                             {label:"Parts Lookup", detail:"Find parts and suppliers", action:"parts"},
                             {label:"Files", detail:"Documents, downloads and drives", action:"files"},
+                            {label:"LibreOffice", detail:"Documents, spreadsheets and presentations", action:"office"},
                             {label:"Firefox", detail:"Browse the web", action:"firefox"},
                             {label:"Chromium", detail:"Alternative web browser", action:"chromium"},
                             {label:"Remote Support", detail:"Get help with the workstation", action:"support"},

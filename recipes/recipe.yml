@@ -39,6 +39,7 @@ modules:
         install:
           - org.mozilla.firefox
           - org.chromium.Chromium
+          - org.libreoffice.LibreOffice
           - org.kde.okular
           - org.kde.gwenview
           - com.rustdesk.RustDesk
