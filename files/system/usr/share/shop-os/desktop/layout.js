@@ -11,6 +11,9 @@ for (var i=0; i<allDesktops.length; i++) {
     desktop.wallpaperPlugin = "org.kde.image";
     desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
     desktop.writeConfig("Image", "file:///usr/share/shop-os/desktop/johns-garage-backyard-wallpaper.png");
+    desktop.writeConfig("FillMode", 1);
+    desktop.writeConfig("Blur", true);
+    desktop.writeConfig("Color", "#171b1f");
     desktop.currentConfigGroup = ["General"];
     desktop.writeConfig("url", __SHORTCUT_URL__);
     desktop.writeConfig("iconSize", screenGeometry(desktop.screen).height < 900 ? 3 : 4);

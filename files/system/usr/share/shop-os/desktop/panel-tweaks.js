@@ -4,6 +4,10 @@ var allDesktops = desktops();
 if (!allDesktops.length) throw new Error("Desktop is not ready yet");
 for (var d = 0; d < allDesktops.length; d++) {
     var desktop = allDesktops[d];
+    desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
+    desktop.writeConfig("FillMode", 1);
+    desktop.writeConfig("Blur", true);
+    desktop.writeConfig("Color", "#171b1f");
     desktop.currentConfigGroup = ["General"];
     desktop.writeConfig("url", __SHORTCUT_URL__);
     desktop.reloadConfig();

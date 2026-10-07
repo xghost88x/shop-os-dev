@@ -11,7 +11,7 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
 PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
-MARKER = STATE / "simple-desktop-v6.applied"
+MARKER = STATE / "simple-desktop-v7.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -69,7 +69,7 @@ class Setup:
         if "JOHNS_GARAGE_DESKTOP_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied Firefox and Chromium taskbar launchers v6.\n")
+        MARKER.write_text("Applied full wallpaper without cropping v7.\n")
         self.app.quit()
 
 
