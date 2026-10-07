@@ -11,7 +11,7 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
 PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
-MARKER = STATE / "simple-desktop-v3.applied"
+MARKER = STATE / "simple-desktop-v4.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -44,6 +44,9 @@ class Setup:
                     shutil.copy2(source, backup / filename)
         shortcuts = STATE / "clean-desktop"
         shortcuts.mkdir(exist_ok=True)
+        files_launcher = shortcuts / "johns-garage-files.desktop"
+        if not files_launcher.exists():
+            files_launcher.symlink_to("/usr/share/applications/johns-garage-files.desktop")
         color_tool = shutil.which("plasma-apply-colorscheme")
         if not color_tool:
             print("John's Garage desktop setup: color scheme tool unavailable.", file=sys.stderr)
@@ -66,7 +69,7 @@ class Setup:
         if "JOHNS_GARAGE_DESKTOP_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied clean silver and slate desktop v3.\n")
+        MARKER.write_text("Applied Files shortcut and engine menu icon v4.\n")
         self.app.quit()
 
 
