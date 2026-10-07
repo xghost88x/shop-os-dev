@@ -1,0 +1,7 @@
+[General]
+Name=Dad's Garage OS
+Version=
+Variant=Built for John — the best dad ever.
+LogoPath=/usr/share/plymouth/themes/dads-garage/wordmark.png
+Website=
+ShowBuild=false
