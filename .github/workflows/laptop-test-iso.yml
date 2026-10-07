@@ -1,0 +1,48 @@
+name: Laptop test installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/laptop-test-iso.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: laptop-test-installer
+  cancel-in-progress: false
+
+jobs:
+  installer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Build Dad's Garage OS installer
+        id: iso
+        uses: JasonN3/build-container-installer@1c2afd1bde337ae07a1ce0a7edbda729d3e4d55c
+        with:
+          arch: x86_64
+          image_name: shop-os-dev
+          image_repo: ghcr.io/xghost88x
+          image_tag: latest
+          image_signed: 'true'
+          version: '44'
+          variant: Kinoite
+          iso_name: Dads-Garage-OS-Laptop-Test.iso
+          enable_cache_dnf: 'false'
+          enable_cache_skopeo: 'false'
+      - name: Write checksum
+        shell: bash
+        run: sha256sum Dads-Garage-OS-Laptop-Test.iso > Dads-Garage-OS-Laptop-Test.iso.sha256
+      - name: Upload USB installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dads-Garage-OS-Laptop-Test
+          path: |
+            Dads-Garage-OS-Laptop-Test.iso
+            Dads-Garage-OS-Laptop-Test.iso.sha256
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
