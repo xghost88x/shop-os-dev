@@ -376,7 +376,7 @@ class ShopOSWindow(QMainWindow):
         layout.addWidget(self.action_button("Show Desktop", self.show_desktop, True, "user-desktop"))
         layout.addWidget(self.action_button("KDE System Settings", self.open_system_settings, True, "settings-configure"))
         layout.addWidget(self.action_button("Network Settings", self.open_network_settings, False, "network-wired"))
-        layout.addWidget(self.action_button("About John's Garage", self.show_about, False, "help-about"))
+        layout.addWidget(self.action_button("Built for John", self.show_about, False, "help-about"))
         layout.addStretch(1)
         return page
 
@@ -467,7 +467,7 @@ class ShopOSWindow(QMainWindow):
         QMessageBox.information(
             self,
             APP_NAME,
-            "John's Garage\n\nAutomotive Service Console\nDevelopment build\nFedora Atomic KDE / BlueBuild",
+            "Dad's Garage OS\n\nBuilt for John — the best dad ever.\n\nMade with love, for every project in your garage.",
         )
 
     def update_clock(self):
