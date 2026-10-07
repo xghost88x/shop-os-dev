@@ -6,6 +6,7 @@ if (knownWidgetTypes.indexOf("org.dadsgarage.servicecenter") < 0 ||
 var garagePanels = panels();
 if (!garagePanels.length) throw new Error("Panel is not ready yet");
 var garagePanel = garagePanels[0];
+garagePanel.height = 48;
 var garageWidgets = garagePanel.widgets();
 var serviceMenu = null;
 var serviceIndex = 0;
@@ -34,8 +35,10 @@ for (var garageD = 0; garageD < garageDesktops.length; garageD++) {
         if (garageDesktopWidgets[garageJ].type === "org.dadsgarage.workstation") monitor = garageDesktopWidgets[garageJ];
     if (!monitor) {
         monitor = garageDesktop.addWidget("org.dadsgarage.workstation");
-        var rectangle = screenGeometry(garageDesktop.screen);
-        monitor.geometry = new QRectF(Math.max(12, rectangle.width - 330), 24, 302, 405);
+
     }
+    var rectangle = screenGeometry(garageDesktop.screen);
+    monitor.geometry = new QRectF(Math.max(12, rectangle.width - 326), Math.max(24, rectangle.height - 405 - garagePanel.height - 24), 302, 405);
 }
 print("DADS_GARAGE_SERVICE_CENTER_READY");
+

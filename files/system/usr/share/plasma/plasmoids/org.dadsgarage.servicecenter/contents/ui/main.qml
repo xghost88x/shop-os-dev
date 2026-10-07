@@ -9,6 +9,9 @@ PlasmoidItem {
     Plasmoid.onActivated: root.expanded = !root.expanded
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     preferredRepresentation: compactRepresentation
+    Layout.minimumWidth: 180
+    Layout.preferredWidth: 190
+    Layout.maximumWidth: 200
     property string launchError: ""
     property bool busy: false
     property string powerAction: ""
@@ -31,12 +34,16 @@ PlasmoidItem {
         request.send(JSON.stringify({action: action}));
     }
     compactRepresentation: Item {
-        implicitWidth: 120
-        implicitHeight: 36
+        implicitWidth: 190
+        Layout.minimumWidth: 180
+        Layout.preferredWidth: 190
+        Layout.maximumWidth: 200
+        implicitHeight: 44
         Image {
             anchors.fill: parent
             anchors.margins: 2
             source: "file:///usr/share/shop-os/desktop/dads-garage-start.png"
+            sourceClipRect: Qt.rect(9, 104, 2163, 600)
             fillMode: Image.PreserveAspectFit
             smooth: true
         }
@@ -151,3 +158,4 @@ PlasmoidItem {
         }
     }
 }
+

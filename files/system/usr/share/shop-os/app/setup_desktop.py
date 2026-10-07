@@ -11,7 +11,7 @@ from PySide6.QtDBus import QDBusConnection, QDBusInterface, QDBusMessage
 ASSETS = Path("/usr/share/shop-os/desktop")
 STATE = Path(QStandardPaths.writableLocation(QStandardPaths.GenericDataLocation)) / "johns-garage-desktop"
 PREVIOUS_MARKER = STATE / "simple-desktop-v1.applied"
-MARKER = STATE / "simple-desktop-v8.applied"
+MARKER = STATE / "simple-desktop-v9.applied"
 CONFIG = Path(QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation))
 
 
@@ -70,7 +70,7 @@ class Setup:
         if "JOHNS_GARAGE_DESKTOP_READY" not in output or "DADS_GARAGE_SERVICE_CENTER_READY" not in output:
             print("John's Garage desktop setup did not complete:", output, file=sys.stderr)
             return
-        MARKER.write_text("Applied Service Center and workstation widget v8.\n")
+        MARKER.write_text("Applied readable start button and lower-right desktop widget v9.\n")
         self.app.quit()
 
 
@@ -84,4 +84,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
