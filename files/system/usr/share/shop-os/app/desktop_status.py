@@ -28,8 +28,8 @@ ACTIONS = {
     'settings': ['systemsettings'],
     'apps': ['krunner'],
     'lock': ['loginctl', 'lock-session'],
-    'restart': ['systemctl', 'reboot'],
-    'shutdown': ['systemctl', 'poweroff'],
+    'restart': ['python3', '/usr/share/shop-os/app/power_transition.py', 'restart'],
+    'shutdown': ['python3', '/usr/share/shop-os/app/power_transition.py', 'shutdown'],
 }
 
 
