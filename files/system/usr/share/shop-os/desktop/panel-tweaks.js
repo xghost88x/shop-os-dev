@@ -22,7 +22,7 @@ for (var i = 0; i < widgets.length; i++) {
     var widget = widgets[i];
     if (widget.type === "org.kde.plasma.kickoff" || widget.type === "org.kde.plasma.kicker") {
         widget.currentConfigGroup = ["General"];
-        widget.writeConfig("icon", "johns-garage-start");
+        widget.writeConfig("icon", "/usr/share/shop-os/desktop/dads-garage-start.png");
         widget.reloadConfig();
         menuFound = true;
     }
@@ -37,7 +37,7 @@ for (var i = 0; i < widgets.length; i++) {
 if (!menuFound) {
     var menu = panel.addWidget("org.kde.plasma.kickoff");
     menu.currentConfigGroup = ["General"];
-    menu.writeConfig("icon", "johns-garage-start");
+    menu.writeConfig("icon", "/usr/share/shop-os/desktop/dads-garage-start.png");
     menu.reloadConfig();
 }
 if (!trayFound) panel.addWidget("org.kde.plasma.systemtray");

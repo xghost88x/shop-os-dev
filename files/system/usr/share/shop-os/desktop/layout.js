@@ -28,7 +28,7 @@ var oldWidgets = panel.widgets();
 for (var i=0; i<oldWidgets.length; i++) oldWidgets[i].remove();
 var menu = panel.addWidget("org.kde.plasma.kickoff");
 menu.currentConfigGroup = ["General"];
-menu.writeConfig("icon", "johns-garage-start");
+menu.writeConfig("icon", "/usr/share/shop-os/desktop/dads-garage-start.png");
 menu.writeConfig("favorites", ["shop-os-dashboard.desktop", "johns-garage-02-videos.desktop", "johns-garage-03-parts.desktop", "johns-garage-04-files.desktop", "johns-garage-05-support.desktop"]);
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
