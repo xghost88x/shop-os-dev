@@ -1,8 +1,8 @@
 [Unit]
 Description=Configure Dad's Garage automatic login
 After=systemd-user-sessions.service
-Before=display-manager.service sddm.service
-ConditionPathExists=!/var/lib/dads-garage/autologin-v1.applied
+Before=display-manager.service sddm.service plasmalogin.service
+ConditionPathExists=!/var/lib/dads-garage/autologin-v2.applied
 
 [Service]
 Type=oneshot
