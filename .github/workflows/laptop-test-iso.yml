@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: sha256sum Dads-Garage-OS-Laptop-Test.iso > Dads-Garage-OS-Laptop-Test.iso.sha256
       - name: Upload USB installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Dads-Garage-OS-Laptop-Test
           path: |
