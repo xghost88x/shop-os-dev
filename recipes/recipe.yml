@@ -36,6 +36,7 @@ modules:
         scope: system
         install:
           - org.mozilla.firefox
+          - org.chromium.Chromium
           - org.kde.okular
           - org.kde.gwenview
           - com.rustdesk.RustDesk

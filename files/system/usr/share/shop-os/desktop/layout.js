@@ -32,7 +32,7 @@ menu.writeConfig("icon", "/usr/share/shop-os/desktop/dads-garage-start.png");
 menu.writeConfig("favorites", ["shop-os-dashboard.desktop", "johns-garage-02-videos.desktop", "johns-garage-03-parts.desktop", "johns-garage-04-files.desktop", "johns-garage-05-support.desktop"]);
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
-tasks.writeConfig("launchers", ["applications:shop-os-dashboard.desktop", "applications:johns-garage-02-videos.desktop", "applications:johns-garage-03-parts.desktop", "applications:johns-garage-04-files.desktop", "applications:johns-garage-05-support.desktop"]);
+tasks.writeConfig("launchers", ["applications:org.mozilla.firefox.desktop", "applications:org.chromium.Chromium.desktop"]);
 panel.addWidget("org.kde.plasma.systemtray");
 var clock = panel.addWidget("org.kde.plasma.digitalclock");
 clock.currentConfigGroup = ["Appearance"];

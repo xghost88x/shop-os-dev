@@ -18,6 +18,7 @@ var widgets = panel.widgets();
 var menuFound = false;
 var clockFound = false;
 var trayFound = false;
+var tasksFound = false;
 for (var i = 0; i < widgets.length; i++) {
     var widget = widgets[i];
     if (widget.type === "org.kde.plasma.kickoff" || widget.type === "org.kde.plasma.kicker") {
@@ -33,12 +34,24 @@ for (var i = 0; i < widgets.length; i++) {
         clockFound = true;
     }
     if (widget.type === "org.kde.plasma.systemtray") trayFound = true;
+    if (widget.type === "org.kde.plasma.icontasks" || widget.type === "org.kde.plasma.taskmanager") {
+        widget.currentConfigGroup = ["General"];
+        widget.writeConfig("launchers", ["applications:org.mozilla.firefox.desktop", "applications:org.chromium.Chromium.desktop"]);
+        widget.reloadConfig();
+        tasksFound = true;
+    }
 }
 if (!menuFound) {
     var menu = panel.addWidget("org.kde.plasma.kickoff");
     menu.currentConfigGroup = ["General"];
     menu.writeConfig("icon", "/usr/share/shop-os/desktop/dads-garage-start.png");
     menu.reloadConfig();
+}
+if (!tasksFound) {
+    var tasks = panel.addWidget("org.kde.plasma.icontasks");
+    tasks.currentConfigGroup = ["General"];
+    tasks.writeConfig("launchers", ["applications:org.mozilla.firefox.desktop", "applications:org.chromium.Chromium.desktop"]);
+    tasks.reloadConfig();
 }
 if (!trayFound) panel.addWidget("org.kde.plasma.systemtray");
 if (!clockFound) {
