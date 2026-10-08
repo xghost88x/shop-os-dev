@@ -105,6 +105,7 @@ PlasmoidItem {
                         model: [
                             {label:"Service Manuals", detail:"Your saved shop reference library", action:"manuals"},
                             {label:"Repair Videos", detail:"Tutorials and repair guidance", action:"videos"},
+                            {label:"Real-Time Labor Guide", detail:"Open Auto Labor Experts in your browser", action:"labor"},
                             {label:"Parts Lookup", detail:"Find parts and suppliers", action:"parts"},
                             {label:"Files", detail:"Documents, downloads and drives", action:"files"},
                             {label:"LibreOffice", detail:"Documents, spreadsheets and presentations", action:"office"},

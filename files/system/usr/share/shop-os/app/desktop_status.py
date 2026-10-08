@@ -19,6 +19,7 @@ CACHE = Path(os.environ.get('XDG_CACHE_HOME', str(Path.home()/'.cache'))) / 'dad
 ACTIONS = {
     'manuals': ['dolphin', str(Path.home()/'Documents/Shop Manuals')],
     'videos': ['python3', '/usr/share/shop-os/app/shop_os.py', '--page=videos'],
+    'labor': ['xdg-open', 'https://www.autolaborexperts.com/real-time-labor-guide'],
     'parts': ['python3', '/usr/share/shop-os/app/shop_os.py', '--page=parts'],
     'files': ['dolphin'],
     'office': ['flatpak', 'run', 'org.libreoffice.LibreOffice'],
