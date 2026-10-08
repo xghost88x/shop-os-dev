@@ -10,7 +10,7 @@ for (var i=0; i<allDesktops.length; i++) {
     var desktop = allDesktops[i];
     desktop.wallpaperPlugin = "org.kde.image";
     desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
-    desktop.writeConfig("Image", "file:///usr/share/shop-os/desktop/johns-garage-backyard-wallpaper.png");
+    desktop.writeConfig("Image", "file:///usr/share/shop-os/desktop/johns-garage-family-daytime-wallpaper.png");
     desktop.writeConfig("FillMode", 1);
     desktop.writeConfig("Blur", true);
     desktop.writeConfig("Color", "#171b1f");
