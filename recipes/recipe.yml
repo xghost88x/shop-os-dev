@@ -48,6 +48,7 @@ modules:
   - type: script
     scripts:
       - configure-boot.sh
+      - install-epson-driver.sh
 
   - type: initramfs
 
