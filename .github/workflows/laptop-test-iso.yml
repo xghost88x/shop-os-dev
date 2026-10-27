@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Build Dad's Garage OS installer
         id: iso
-        uses: JasonN3/build-container-installer@1c2afd1bde337ae07a1ce0a7edbda729d3e4d55c
+        uses: JasonN3/build-container-installer@21ba332383d8499c2b6e3ba26cef86052d81f847
         with:
           arch: x86_64
           image_name: shop-os-dev
